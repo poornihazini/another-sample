@@ -5,7 +5,7 @@ export default class UserList extends React.Component {
     constructor(props) {
         super(props);
 
-        this.state = {person: [], value: ''};
+        this.state = {userList: [], initialList: [], value: ''};
 
         this.handleChange = this.handleChange.bind(this);
     }
@@ -17,16 +17,21 @@ export default class UserList extends React.Component {
     UserList() {
         axios.get('https://api.github.com/users')
             .then(res => {
-                this.setState({person: res.data})
+                this.setState({userList: res.data, initialList:res.data})
             });
     }
 
     handleChange(event) {
         this.setState({value: event.target.value});
+        const filteredList = this.state.initialList.filter(function(item){
+            return item.login.toLowerCase().search(
+                event.target.value.toLowerCase()) !== -1;
+        });
+        this.setState({userList: filteredList});
     }
 
     render() {
-        const persons = this.state.person.map((item) => (
+        const persons = this.state.userList.map((item) => (
             <div>
                 <br/>
                 <br/>
@@ -39,7 +44,7 @@ export default class UserList extends React.Component {
 
         return (
             <div>
-                <h1>Github Users</h1>
+                <h1>GitHub Users</h1>
                 <br/>
                 <br/>
                 <input style={{width: '200px', paddingLeft:'10px', height:'50px'}} placeholder="Search here..." type="text" value={this.state.value} onChange={this.handleChange}/>
